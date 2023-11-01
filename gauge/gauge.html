@@ -1,0 +1,580 @@
+<link href="http://localhost:8080/gauge/bootstrap.min.css" type="text/css" rel="stylesheet">
+<link href="http://localhost:8080/gauge/main.css?v=5" type="text/css" rel="stylesheet">
+<link href="http://localhost:8080/gauge/prettify.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="http://localhost:8080/gauge/fd-slider.css">
+<link rel="stylesheet" type="text/css" href="http://localhost:8080/gauge/fd-slider-tooltip.css">
+<script type="text/javascript" src="http://localhost:8080/gauge/prettify.js"></script>
+<script type="text/javascript" src="http://localhost:8080/gauge/jscolor.js"></script>
+<script type="text/javascript" src="http://localhost:8080/gauge/fd-slider.js"></script>
+<script src="http://localhost:8080/gauge/gauge.js"></script>
+
+<script type="text/javascript">
+  (function () {
+    RED.nodes.registerType('gauge', {
+      category: 'output',
+      color: '#88A882',
+      defaults: {
+        name: { value: "" },
+        data: {
+          value: "payload",
+          required: true,
+          validate: RED.validators.typedInput("dataType")
+        },
+        dataType: { value: "msg" },
+        thumbnail: { value: false },
+        active: { value: true },
+        pass: { value: true },
+        outputs: { value: 1 }
+      },
+      inputs: 1,
+      outputs: 1,
+      icon: "font-awesome/fa-tachometer",
+      align: 'right',
+      palettelabel: "gauge",
+      label: function () {
+        return this.name||"gauge";
+      },
+      labelStyle: function () {
+        return this.name? "node_label_italic":"";
+      },
+      inputLabels: function () {
+        return `${this.dataType}.${this.data}`;
+      },
+      oneditprepare: function () {
+
+        $('#divisionsCbx').click(function () {
+          $('.subDivisions').toggle();
+          $('#subDivisions').toggle();
+          fdSlider.redrawAll();
+        })
+
+        function update () {
+          var opts={};
+          var tmp_opts=opts;
+          tmp_opts.renderTicks={};
+
+          if ($('.subDivisions:visible').length) {
+            $('.renderTicks').each(function () {
+              var val=$(this).hasClass("color")? this.value:parseFloat(this.value);
+              if ($(this).hasClass("color")) {
+                val="#"+val;
+              }
+              if (this.name.indexOf("divLength")!=-1||
+                this.name.indexOf("subLength")!=-1) {
+                val/=100;
+              }
+              if (this.name.indexOf("divWidth")!=-1||
+                this.name.indexOf("subWidth")!=-1) {
+                val/=10;
+              }
+
+              $('#opt-'+this.name.replace(".", "-")).text(val);
+
+              if (this.name.indexOf(".")!=-1) {
+                var elems=this.name.split(".");
+
+                for (var i=0; i<elems.length-1; i++) {
+                  if (!(elems[i] in tmp_opts)) {
+                    tmp_opts.renderTicks[elems[i]]={};
+                  }
+                  tmp_opts=tmp_opts.renderTicks[elems[i]];
+                }
+                tmp_opts.renderTicks[elems[elems.length-1]]=val;
+              } else if ($(this).hasClass("color")) {
+                // color picker is removing # from color values
+                opts.renderTicks[this.name]="#"+this.value
+                $('#opt-'+this.name.replace(".", "-")).text("#"+this.value);
+              } else {
+                opts.renderTicks[this.name]=val;
+              }
+            });
+          }
+
+
+          $('.opts input[min], .opts .color').not('.renderTicks').each(function () {
+            var val=$(this).hasClass("color")? this.value:parseFloat(this.value);
+            if ($(this).hasClass("color")) {
+              val="#"+val;
+            }
+            if (this.name.indexOf("lineWidth")!=-1||
+              this.name.indexOf("radiusScale")!=-1||
+              this.name.indexOf("angle")!=-1||
+
+              this.name.indexOf("pointer.length")!=-1) {
+              val/=100;
+            } else if (this.name.indexOf("pointer.strokeWidth")!=-1) {
+              val/=1000;
+            }
+            $('#opt-'+this.name.replace(".", "-")).text(val);
+            if (this.name.indexOf(".")!=-1) {
+              var elems=this.name.split(".");
+              var tmp_opts=opts;
+              for (var i=0; i<elems.length-1; i++) {
+                if (!(elems[i] in tmp_opts)) {
+                  tmp_opts[elems[i]]={};
+                }
+                tmp_opts=tmp_opts[elems[i]];
+              }
+              tmp_opts[elems[elems.length-1]]=val;
+            } else if ($(this).hasClass("color")) {
+              // color picker is removing # from color values
+              opts[this.name]="#"+this.value
+              $('#opt-'+this.name.replace(".", "-")).text("#"+this.value);
+            } else {
+              opts[this.name]=val;
+            }
+            if (this.name=="currval") {
+              // update current demo gauge
+              demoGauge.set(parseInt(this.value));
+              AnimationUpdater.run();
+            }
+          });
+          $('#opts input:checkbox').each(function () {
+            opts[this.name]=this.checked;
+            $('#opt-'+this.name).text(this.checked);
+          });
+          demoGauge.animationSpeed=opts.animationSpeed;
+          opts.generateGradient=true;
+          console.log(opts);
+          demoGauge.setOptions(opts);
+          demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
+          demoGauge.render();
+          if ($('#share').is(':checked')) {
+            window.location.replace('#?'+$('form').serialize());
+          }
+
+        }
+        function initGauge () {
+          demoGauge=new Gauge(document.getElementById("canvas-preview"));
+          demoGauge.setTextField(document.getElementById("preview-textfield"));
+          demoGauge.maxValue=3000;
+          demoGauge.set(1244);
+        };
+        function initDonut () {
+          demoGauge=new Donut(document.getElementById("canvas-preview"));
+          demoGauge.setTextField(document.getElementById("preview-textfield"));
+          demoGauge.maxValue=3000;
+          demoGauge.set(1244);
+        };
+        function initZones () {
+          demoGauge=new Gauge(document.getElementById("canvas-preview"));
+          var opts={
+            angle: -0.25,
+            lineWidth: 0.2,
+            radiusScale: 0.9,
+            pointer: {
+              length: 0.6,
+              strokeWidth: 0.05,
+              color: '#000000'
+            },
+            staticLabels: {
+              font: "10px sans-serif",
+              labels: [200, 500, 2100, 2800],
+              fractionDigits: 0
+            },
+            staticZones: [
+              { strokeStyle: "#F03E3E", min: 0, max: 200 },
+              { strokeStyle: "#FFDD00", min: 200, max: 500 },
+              { strokeStyle: "#30B32D", min: 500, max: 2100 },
+              { strokeStyle: "#FFDD00", min: 2100, max: 2800 },
+              { strokeStyle: "#F03E3E", min: 2800, max: 3000 }
+            ],
+            limitMax: false,
+            limitMin: false,
+            highDpiSupport: true
+          };
+          demoGauge.setOptions(opts);
+          demoGauge.setTextField(document.getElementById("preview-textfield"));
+          demoGauge.minValue=0;
+          demoGauge.maxValue=3000;
+          demoGauge.set(1244);
+        };
+        function initNew () {
+          demoGauge=new Gauge(document.getElementById("canvas-preview"));
+          var bigFont="14px sans-serif";
+          var opts={
+            angle: 0.1,
+            radiusScale: 0.9,
+            lineWidth: 0.2,
+            pointer: {
+              length: 0.6,
+              strokeWidth: 0.05,
+              color: '#000000'
+            },
+            staticLabels: {
+              font: "10px sans-serif",
+              labels: [{ label: 200, font: bigFont },
+              { label: 750 },
+              { label: 1500 },
+              { label: 2250 },
+              { label: 3000 },
+              { label: 3500, font: bigFont }],
+              fractionDigits: 0
+            },
+            staticZones: [
+              { strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.2 },
+              { strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.1 },
+              { strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1 },
+              { strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.9 },
+              { strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.8 },
+              { strokeStyle: "rgb(80,255,80)", min: 3100, max: 3500, height: 0.7 },
+              { strokeStyle: "rgb(130,130,130)", min: 2470, max: 2530, height: 1 }
+            ],
+            limitMax: false,
+            limitMin: false,
+            highDpiSupport: true
+          };
+          demoGauge.setOptions(opts);
+          document.getElementById("preview-textfield").className="preview-textfield";
+          demoGauge.setTextField(document.getElementById("preview-textfield"));
+          demoGauge.minValue=0;
+          demoGauge.maxValue=3500;
+          demoGauge.set(2122);
+        };
+        $(function () {
+          var params={};
+          var hash=/^#\?(.*)/.exec(location.hash);
+          if (hash) {
+            $('#share').prop('checked', true);
+            $.each(hash[1].split(/&/), function (i, pair) {
+              var kv=pair.split(/=/);
+              params[kv[0]]=kv[kv.length-1];
+            });
+          }
+          $('.opts input[min], #opts .color').each(function () {
+            var val=params[this.name];
+            if (val!==undefined) this.value=val;
+            this.onchange=update;
+          });
+          $('.opts input[name=currval]').mouseup(function () {
+            AnimationUpdater.run();
+          });
+
+          $('.opts input:checkbox').each(function () {
+            this.checked=!!params[this.name];
+            this.onclick=update;
+          });
+          $('#share').click(function () {
+            window.location.replace(this.checked? '#?'+$('form').serialize():'#!');
+          });
+
+          $("#type-select li").click(function () {
+            $("#type-select li").removeClass("active")
+            $(this).addClass("active");
+            var type=$(this).attr("type");
+            if (type=="donut") {
+              initDonut();
+              $("input[name=lineWidth]").val(10);
+              $("input[name=fontSize]").val(24);
+              $("input[name=angle]").val(35);
+              $("#preview-textfield").removeClass("reset");
+              //$("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
+              //$("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
+              //$("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
+
+              fdSlider.disable('input-ptr-len');
+              fdSlider.disable('input-ptr-stroke');
+              $("#input-ptr-color").prop('disabled', true);
+
+              selectGaguge1.set(1);
+              selectGaguge2.set(3000);
+              selectGauge3.set(1);
+              selectGauge4.set(1);
+
+            } else if (type=="zones") {
+              initZones();
+              fdSlider.disable('input-ptr-len');
+              fdSlider.disable('input-ptr-stroke');
+              $("#preview-textfield").removeClass("reset").addClass("reset");
+              $("input[name=angle]").val(-20);
+              $("input[name=lineWidth]").val(20);
+
+              fdSlider.enable('input-ptr-len');
+              fdSlider.enable('input-ptr-stroke');
+              $("input[name=colorStart]").prop('disabled', true);
+              $("input[name=colorStop]").prop('disabled', true);
+              $("input[name=strokeColor]").prop('disabled', true);
+
+              $("input[name=colorStop]").prop('disabled', true);
+              $("input[name=strokeColor]").prop('disabled', true);
+
+              selectGaguge1.set(1);
+              selectGaguge2.set(1);
+              selectGauge3.set(3000);
+              selectGauge4.set(1);
+
+            } else if (type=="new") {
+              initNew();
+              $("input[name=lineWidth]").val(30);
+              $("input[name=fontSize]").val(41);
+              $("input[name=angle]").val(10);
+              $("#preview-textfield").removeClass("reset").addClass("reset");
+              selectGaguge1.set(1);
+              selectGaguge2.set(1);
+              selectGauge3.set(1);
+              selectGauge4.set(2213);
+            } else {
+              initGauge();
+              $("input[name=lineWidth]").val(44);
+              $("input[name=fontSize]").val(41);
+              $("input[name=angle]").val(15);
+              $("#preview-textfield").removeClass("reset").addClass("reset");
+
+
+              //$("input[name=colorStart]").val("6FADCF")[0].color.importColor();
+              //$("input[name=colorStop]").val("8FC0DA")[0].color.importColor();
+              //$("input[name=strokeColor]").val("E0E0E0")[0].color.importColor();
+
+              fdSlider.enable('input-ptr-len');
+              fdSlider.enable('input-ptr-stroke');
+              $("#input-ptr-color").prop('disabled', false);
+              selectGaguge1.set(3000);
+              selectGaguge2.set(1);
+              selectGauge3.set(1);
+              selectGauge4.set(1);
+            }
+            //fdSlider.updateSlider('input-line-width');
+            fdSlider.updateSlider('input-font-size');
+            fdSlider.updateSlider('input-angle');
+            $("#example").removeClass("donut, gauge").addClass(type);
+            update();
+          });
+
+          selectGaguge1=new Gauge(document.getElementById("select-1"));
+          selectGaguge1.maxValue=3000;
+          selectGaguge1.set(1552);
+
+          selectGauge4=new Gauge(document.getElementById("select-4"));
+          var opts2={
+            angle: 0.1,
+            lineWidth: 0.2,
+            pointer: {
+              length: 0.5,
+              strokeWidth: 0.05,
+              color: '#000000'
+            },
+            staticZones: [
+              { strokeStyle: "#F03E3E", min: 0, max: 500, height: 2 },
+              { strokeStyle: "#FFDD00", min: 500, max: 1000, height: 1.5 },
+              { strokeStyle: "#30B32D", min: 1000, max: 1500, height: 1 },
+              { strokeStyle: "#FFDD00", min: 1500, max: 2000, height: 0.7 },
+              { strokeStyle: "#F03E3E", min: 2000, max: 3000, height: 0.3 }
+            ],
+            limitMax: false,
+            limitMin: false,
+            highDpiSupport: true
+          };
+          selectGauge4.minValue=0;
+          selectGauge4.maxValue=3000;
+          selectGauge4.setOptions(opts2);
+          selectGauge4.set(2122);
+
+          selectGaguge2=new Donut(document.getElementById("select-2"));
+          selectGaguge2.maxValue=3000;
+          selectGaguge2.set(1844);
+
+          selectGauge3=new Gauge(document.getElementById("select-3"));
+          var opts={
+            angle: -0.25,
+            lineWidth: 0.2,
+            pointer: {
+              length: 0.6,
+              strokeWidth: 0.05,
+              color: '#000000'
+            },
+            staticZones: [
+              { strokeStyle: "#F03E3E", min: 0, max: 200 },
+              { strokeStyle: "#FFDD00", min: 200, max: 500 },
+              { strokeStyle: "#30B32D", min: 500, max: 2100 },
+              { strokeStyle: "#FFDD00", min: 2100, max: 2800 },
+              { strokeStyle: "#F03E3E", min: 2800, max: 3000 }
+            ],
+            limitMax: false,
+            limitMin: false,
+            strokeColor: '#E0E0E0',
+            highDpiSupport: true
+          };
+          selectGauge3.minValue=0;
+          selectGauge3.maxValue=3000;
+          selectGauge3.setOptions(opts);
+          selectGauge3.set(1607);
+
+          initGauge();
+          update();
+
+        });
+
+
+      }
+
+    });
+
+    var remove=function (node) {
+      console.log("remove()");
+      const id=node.id;
+      const $foreignObject=document.getElementById('gauge-foreignObject-'+id)
+      const $background=document.getElementById('gauge-background-'+id);
+
+      $foreignObject&&$foreignObject.remove()
+      $background&&$background.remove()
+      delete node.gauge;
+    }
+
+    var redraw=function (node) {
+      console.log("redraw()");
+      const id=node.id
+
+      const $foreignObject=document.getElementById('gauge-foreignObject-'+id)
+      const $background=document.getElementById('gauge-background-'+id);
+
+      $foreignObject&&$foreignObject.remove()
+      $background&&$background.remove()
+    }
+
+    var render=function (id, data, node) {
+      console.log("render()");
+      //let i = new Image();
+
+      //let $img = document.getElementById("gauge-img-" + id)
+      const $container=document.getElementById(id)
+      if (!$container) { return }
+
+      if (!node.gauge) {
+        var opts={
+          lines: 15,
+          angle: 0,
+          lineWidth: 0.44,
+          pointer: {
+            length: 0.7,
+            strokeWidth: .05,
+            color: '#AAAAAA'
+          },
+          limitMax: 'false',
+          percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]], // !!!!
+          strokeColor: '#E0E0E0',
+          staticZones: [
+            { strokeStyle: "#30B32D", min: 0, max: 1000 },    // Green to Yellowish Green
+            { strokeStyle: "#ADFF2F", min: 1000, max: 2000 }, // Yellowish Green to Yellow
+            { strokeStyle: "#FFDD00", min: 2000, max: 3000 }, // Yellow
+            { strokeStyle: "#FF4500", min: 3000, max: 4000 }, // Yellow to Red
+            { strokeStyle: "#F03E3E", min: 4000, max: 5000 }  // Red
+          ],
+        };
+        console.log($container)
+
+        var canvas=document.createElement('canvas');
+        canvas.setAttribute('width', '100');
+        canvas.setAttribute('height', '50');
+        canvas.setAttribute('id', 'gauge-canvas-'+id);
+
+        var backgroundRect=document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        backgroundRect.setAttribute('width', '100');
+        backgroundRect.setAttribute('height', '50');
+        backgroundRect.setAttribute('fill', 'black');
+        backgroundRect.setAttribute('stroke', 'grey');
+        backgroundRect.setAttribute('stroke-width', '2');
+        backgroundRect.setAttribute('transform', 'translate(0,-53)');
+        backgroundRect.setAttribute('id', 'gauge-background-'+id);
+
+        $container.appendChild(backgroundRect);
+
+        var foreignObject=document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+        foreignObject.setAttribute('width', '100');
+        foreignObject.setAttribute('height', '50');
+        foreignObject.setAttribute('transform', 'translate(0,-53)');
+        foreignObject.setAttribute('id', 'gauge-foreignObject-'+id);
+        foreignObject.appendChild(canvas);
+        $container.appendChild(foreignObject);
+
+        node.gauge=new Gauge(canvas).setOptions(opts);
+        node.gauge.maxValue=5000;
+        node.gauge.paddingBottom=0.5;
+        node.gauge.animationSpeed=100;
+
+        node.gauge.set(0);
+      }
+
+      if (node.gauge) {
+        //const $needle = document.getElementById("gauge-needle-" + id)
+        //$needle.setAttribute('transform', 'translate(50,15) rotate('+data+',0,0)');
+        node.gauge.set(data);
+      }
+    }
+
+
+    RED.events.on("editor:save", redraw)
+
+    RED.comms.subscribe('gauge', function (event, data) {
+      if (data.hasOwnProperty("data")) {
+        render(data.id, data.data, RED.nodes.node(data.id))
+      }
+      else {
+        remove(RED.nodes.node(data.id));
+      }
+    })
+  })();
+</script>
+
+<script type="text/html" data-template-name="gauge">
+    <div class="form-row">
+        <label style="padding-top: 8px" for="node-input-data"><i class="fa fa-ellipsis-h"></i> Property</label>
+        <input type="text" id="node-input-data" style="width:70%">
+        <input type="hidden" id="node-input-dataType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-property"><i class="fa fa-arrows-h"></i> Property to monitor</label>
+        <input type="text" id="node-input-property">
+    </div>
+
+    <h4>Variant selection</h4>
+    <ul class="horiz-list" id="type-select">
+      <li class="active" type="gauge"><canvas width=80 height=50 id="select-1"></canvas></li>
+      <li type="donut"><canvas width=80 height=40 id="select-2"></canvas></li>
+      <li type="zones"><canvas width=80 height=50 id="select-3"></canvas></li>
+      <li type="new"><canvas width=80 height=50 id="select-4"></canvas></li>
+    </ul>    
+
+    <div id="preview">
+        <canvas width=380 height=150 id="canvas-preview"></canvas>
+        <div id="preview-textfield"></div>
+    </div>
+
+    <div class="form-row">
+    <label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
+    <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
+    <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
+    <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
+    <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
+    <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="60"><br>
+    <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
+    <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
+    <label>Font size:</label><input id="input-font-size" type="text" name="fontSize" min="0" max="100" value="41"><br>
+    <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
+    <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
+    <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
+
+    <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
+
+    <div class="subDivisions" style="display: none;">
+    <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
+    <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
+    <label>Division Color:</label><input type="text" name="divColor" value="333333" class="color renderTicks"><br>
+    <label>Division indicator width:</label><input type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
+    <label>SubDivisions:</label><input type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
+    <label>SubDivisions Length:</label><input type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
+    <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
+    <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
+    </div>
+
+</div>
+
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="image">
+    <p>An inline gauge that displays the output of a property in real-time</p>
+</script>

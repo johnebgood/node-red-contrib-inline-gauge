@@ -468,12 +468,14 @@
         canvas.setAttribute('id', 'gauge-canvas-'+id);
 
         var backgroundRect=document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        backgroundRect.setAttribute("rx", 5);
+        backgroundRect.setAttribute("ry", 5);
         backgroundRect.setAttribute('width', '100');
         backgroundRect.setAttribute('height', '50');
         backgroundRect.setAttribute('fill', 'black');
         backgroundRect.setAttribute('stroke', 'grey');
         backgroundRect.setAttribute('stroke-width', '2');
-        backgroundRect.setAttribute('transform', 'translate(0,-53)');
+        backgroundRect.setAttribute('transform', 'translate(0,32)');
         backgroundRect.setAttribute('id', 'gauge-background-'+id);
 
         $container.appendChild(backgroundRect);
@@ -481,7 +483,7 @@
         var foreignObject=document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
         foreignObject.setAttribute('width', '100');
         foreignObject.setAttribute('height', '50');
-        foreignObject.setAttribute('transform', 'translate(0,-53)');
+        foreignObject.setAttribute('transform', 'translate(0,32)');
         foreignObject.setAttribute('id', 'gauge-foreignObject-'+id);
         foreignObject.appendChild(canvas);
         $container.appendChild(foreignObject);

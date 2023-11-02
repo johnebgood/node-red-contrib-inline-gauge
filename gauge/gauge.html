@@ -1,12 +1,19 @@
-<link href="http://localhost:8080/gauge/bootstrap.min.css" type="text/css" rel="stylesheet">
-<link href="http://localhost:8080/gauge/main.css?v=5" type="text/css" rel="stylesheet">
-<link href="http://localhost:8080/gauge/prettify.css" type="text/css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="http://localhost:8080/gauge/fd-slider.css">
-<link rel="stylesheet" type="text/css" href="http://localhost:8080/gauge/fd-slider-tooltip.css">
+<link href="http://localhost:8080/gauge/bootstrap.min.css" type="text/css"
+  rel="stylesheet">
+<link href="http://localhost:8080/gauge/main.css?v=5" type="text/css"
+  rel="stylesheet">
+<link href="http://localhost:8080/gauge/prettify.css" type="text/css"
+  rel="stylesheet">
+<link rel="stylesheet" type="text/css"
+  href="http://localhost:8080/gauge/fd-slider.css">
+<link rel="stylesheet" type="text/css"
+  href="http://localhost:8080/gauge/fd-slider-tooltip.css">
 <script type="text/javascript" src="http://localhost:8080/gauge/prettify.js"></script>
-<script type="text/javascript" src="http://localhost:8080/gauge/jscolor.js"></script>
-<script type="text/javascript" src="http://localhost:8080/gauge/fd-slider.js"></script>
+<script type="text/javascript"
+  src="http://localhost:8080/gauge.js/assets/jscolor.js"></script>
 <script src="http://localhost:8080/gauge/gauge.js"></script>
+<script type="text/javascript"
+  src="http://localhost:8080/gauge.js/assets/fd-slider/fd-slider.js"></script>
 
 <script type="text/javascript">
   (function () {
@@ -41,6 +48,8 @@
         return `${this.dataType}.${this.data}`;
       },
       oneditprepare: function () {
+        fdSlider.init();
+        jscolor.init();
 
         $('#divisionsCbx').click(function () {
           $('.subDivisions').toggle();
@@ -145,18 +154,21 @@
 
         }
         function initGauge () {
+          console.log("initGauge");
           demoGauge=new Gauge(document.getElementById("canvas-preview"));
           demoGauge.setTextField(document.getElementById("preview-textfield"));
           demoGauge.maxValue=3000;
           demoGauge.set(1244);
         };
         function initDonut () {
+          console.log("initDonut");
           demoGauge=new Donut(document.getElementById("canvas-preview"));
           demoGauge.setTextField(document.getElementById("preview-textfield"));
           demoGauge.maxValue=3000;
           demoGauge.set(1244);
         };
         function initZones () {
+          console.log("initZones");
           demoGauge=new Gauge(document.getElementById("canvas-preview"));
           var opts={
             angle: -0.25,
@@ -190,6 +202,7 @@
           demoGauge.set(1244);
         };
         function initNew () {
+          console.log("initNew");
           demoGauge=new Gauge(document.getElementById("canvas-preview"));
           var bigFont="14px sans-serif";
           var opts={
@@ -232,21 +245,18 @@
           demoGauge.set(2122);
         };
         $(function () {
+
+          console.log("anon function()");
+
           var params={};
-          var hash=/^#\?(.*)/.exec(location.hash);
-          if (hash) {
-            $('#share').prop('checked', true);
-            $.each(hash[1].split(/&/), function (i, pair) {
-              var kv=pair.split(/=/);
-              params[kv[0]]=kv[kv.length-1];
-            });
-          }
+
           $('.opts input[min], #opts .color').each(function () {
             var val=params[this.name];
             if (val!==undefined) this.value=val;
             this.onchange=update;
           });
           $('.opts input[name=currval]').mouseup(function () {
+            console.log("currval update");
             AnimationUpdater.run();
           });
 
@@ -268,9 +278,9 @@
               $("input[name=fontSize]").val(24);
               $("input[name=angle]").val(35);
               $("#preview-textfield").removeClass("reset");
-              //$("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
-              //$("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
-              //$("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
+              $("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
+              $("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
+              $("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
 
               fdSlider.disable('input-ptr-len');
               fdSlider.disable('input-ptr-stroke');
@@ -321,9 +331,9 @@
               $("#preview-textfield").removeClass("reset").addClass("reset");
 
 
-              //$("input[name=colorStart]").val("6FADCF")[0].color.importColor();
-              //$("input[name=colorStop]").val("8FC0DA")[0].color.importColor();
-              //$("input[name=strokeColor]").val("E0E0E0")[0].color.importColor();
+              $("input[name=colorStart]").val("6FADCF")[0].color.importColor();
+              $("input[name=colorStop]").val("8FC0DA")[0].color.importColor();
+              $("input[name=strokeColor]").val("E0E0E0")[0].color.importColor();
 
               fdSlider.enable('input-ptr-len');
               fdSlider.enable('input-ptr-stroke');
@@ -523,13 +533,6 @@
         <input type="text" id="node-input-data" style="width:70%">
         <input type="hidden" id="node-input-dataType">
     </div>
-    <div class="form-row">
-        <label for="node-input-property"><i class="fa fa-arrows-h"></i> Property to monitor</label>
-        <input type="text" id="node-input-property">
-    </div>
-    <div class="form-row">
-    I want to get this edit page working like this example: <a target="_blank" href="https://bernii.github.io/gauge.js/">https://bernii.github.io/gauge.js/</a>
-    </div>
     <h4>Variant selection</h4>
     <ul class="horiz-list" id="type-select">
       <li class="active" type="gauge"><canvas width=80 height=50 id="select-1"></canvas></li>
@@ -539,36 +542,37 @@
     </ul>    
 
     <div id="preview">
-        <canvas width=380 height=150 id="canvas-preview"></canvas>
+        <canvas width=250 height=100 id="canvas-preview"></canvas>
         <div id="preview-textfield"></div>
     </div>
-
-    <div class="form-row">
-    <label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
-    <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
-    <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
-    <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
-    <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
-    <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="60"><br>
-    <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
-    <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
-    <label>Font size:</label><input id="input-font-size" type="text" name="fontSize" min="0" max="100" value="41"><br>
-    <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
-    <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
-    <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
-
-    <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
-
-    <div class="subDivisions" style="display: none;">
-    <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
-    <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
-    <label>Division Color:</label><input type="text" name="divColor" value="333333" class="color renderTicks"><br>
-    <label>Division indicator width:</label><input type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
-    <label>SubDivisions:</label><input type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
-    <label>SubDivisions Length:</label><input type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
-    <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
-    <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
-    </div>
+    <form id="opts" class="opts">
+      <h4>Options:</h4>
+      <label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
+      <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
+      <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
+      <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
+      <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
+      <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="60"><br>
+      <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
+      <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
+      <label>Font size:</label><input id="input-font-size" type="text" name="fontSize" min="0" max="100" value="41"><br>
+      <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
+      <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
+      <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
+  
+      <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
+  
+      <div class="subDivisions" style="display: none;">
+      <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
+      <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
+      <label>Division Color:</label><input type="text" name="divColor" value="333333" class="color renderTicks"><br>
+      <label>Division indicator width:</label><input type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
+      <label>SubDivisions:</label><input type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
+      <label>SubDivisions Length:</label><input type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
+      <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
+      <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
+      </div>
+    </form>
 
 </div>
 

@@ -1,19 +1,16 @@
-<link href="http://localhost:8080/gauge/bootstrap.min.css" type="text/css"
+<link href="resources/node-red-contrib-inline-gauge/bootstrap.min.css" type="text/css"
   rel="stylesheet">
-<link href="http://localhost:8080/gauge/main.css?v=5" type="text/css"
-  rel="stylesheet">
-<link href="http://localhost:8080/gauge/prettify.css" type="text/css"
+<link href="resources/node-red-contrib-inline-gauge/main.css?v=5" type="text/css"
   rel="stylesheet">
 <link rel="stylesheet" type="text/css"
-  href="http://localhost:8080/gauge/fd-slider.css">
+  href="resources/node-red-contrib-inline-gauge/fd-slider.css">
 <link rel="stylesheet" type="text/css"
-  href="http://localhost:8080/gauge/fd-slider-tooltip.css">
-<script type="text/javascript" src="http://localhost:8080/gauge/prettify.js"></script>
+  href="resources/node-red-contrib-inline-gauge/fd-slider-tooltip.css">
 <script type="text/javascript"
-  src="http://localhost:8080/gauge.js/assets/jscolor.js"></script>
-<script src="http://localhost:8080/gauge/gauge.js"></script>
+  src="resources/node-red-contrib-inline-gauge/jscolor.js"></script>
+<script src="resources/node-red-contrib-inline-gauge/gauge.js"></script>
 <script type="text/javascript"
-  src="http://localhost:8080/gauge.js/assets/fd-slider/fd-slider.js"></script>
+  src="resources/node-red-contrib-inline-gauge/fd-slider.js"></script>
 
 <script type="text/javascript">
   (function () {
@@ -100,7 +97,7 @@
           }
 
 
-          $('.opts input[min], .opts .color').not('.renderTicks').each(function () {
+          $('.gauge-opts input[min], .gauge-opts .color').not('.renderTicks').each(function () {
             var val=$(this).hasClass("color")? this.value:parseFloat(this.value);
             if ($(this).hasClass("color")) {
               val="#"+val;
@@ -138,13 +135,14 @@
               AnimationUpdater.run();
             }
           });
-          $('#opts input:checkbox').each(function () {
+          $('#gauge-opts input:checkbox').each(function () {
+            console.log("input:checkbox");
             opts[this.name]=this.checked;
             $('#opt-'+this.name).text(this.checked);
           });
           demoGauge.animationSpeed=opts.animationSpeed;
           opts.generateGradient=true;
-          console.log(opts);
+          //console.log(opts);
           demoGauge.setOptions(opts);
           demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
           demoGauge.render();
@@ -244,23 +242,26 @@
           demoGauge.maxValue=3500;
           demoGauge.set(2122);
         };
+
         $(function () {
 
           console.log("anon function()");
 
           var params={};
 
-          $('.opts input[min], #opts .color').each(function () {
+          $('.gauge-opts input[min], #gauge-opts .color').each(function () {
             var val=params[this.name];
             if (val!==undefined) this.value=val;
             this.onchange=update;
           });
-          $('.opts input[name=currval]').mouseup(function () {
+
+          $('.gauge-opts input[name=currval]').mouseup(function () {
             console.log("currval update");
             AnimationUpdater.run();
           });
 
-          $('.opts input:checkbox').each(function () {
+          $('.gauge-opts input:checkbox').each(function () {
+            console.log("checkbox");
             this.checked=!!params[this.name];
             this.onclick=update;
           });
@@ -301,10 +302,11 @@
 
               fdSlider.enable('input-ptr-len');
               fdSlider.enable('input-ptr-stroke');
+              $("#input-ptr-color").prop('disabled', false);
+
               $("input[name=colorStart]").prop('disabled', true);
               $("input[name=colorStop]").prop('disabled', true);
               $("input[name=strokeColor]").prop('disabled', true);
-
               $("input[name=colorStop]").prop('disabled', true);
               $("input[name=strokeColor]").prop('disabled', true);
 
@@ -470,7 +472,7 @@
             { strokeStyle: "#F03E3E", min: 4000, max: 5000 }  // Red
           ],
         };
-        console.log($container)
+        //console.log($container)
 
         var canvas=document.createElement('canvas');
         canvas.setAttribute('width', '100');
@@ -533,7 +535,7 @@
         <input type="text" id="node-input-data" style="width:70%">
         <input type="hidden" id="node-input-dataType">
     </div>
-    <h4>Variant selection</h4>
+
     <ul class="horiz-list" id="type-select">
       <li class="active" type="gauge"><canvas width=80 height=50 id="select-1"></canvas></li>
       <li type="donut"><canvas width=80 height=40 id="select-2"></canvas></li>
@@ -541,11 +543,16 @@
       <li type="new"><canvas width=80 height=50 id="select-4"></canvas></li>
     </ul>    
 
+
     <div id="preview">
-        <canvas width=250 height=100 id="canvas-preview"></canvas>
+        <canvas width=150 height=100 id="canvas-preview"></canvas>
         <div id="preview-textfield"></div>
     </div>
-    <form id="opts" class="opts">
+
+
+
+  <div class="form-row">
+    <div id="gauge-opts" class="gauge-opts">
       <h4>Options:</h4>
       <label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
       <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
@@ -572,10 +579,7 @@
       <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
       <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
       </div>
-    </form>
-
-</div>
-
+    </div>
 
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>

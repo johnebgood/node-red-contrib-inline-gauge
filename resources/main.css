@@ -1,16 +1,14 @@
 html, body {
   margin: 0;
 }
-html {
-  background: url(bg.png);
-}
+
 body {
   color: #333;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 16px;
 }
 ul {
-  padding: 0 0 0 20px;
+  padding: 20px 0 0 0;
 }
 #content {
   width: 75%;
@@ -37,15 +35,7 @@ ul {
   top: -10px;
   width: 100%;
 }
-#footer a.github {
-   background: url(github.gif) no-repeat;
-   width: 68px;
-   height: 30px;
-   text-indent: -999em;
-   position: absolute;
-   bottom: 30px;
-   right: 30px;
-}
+
 .subDivisions {
   background-color: rgba(255,255,255,0.2);
   padding: 0.2em;
@@ -121,14 +111,7 @@ h2 {
 h3 {
   margin: 35px 0 10px 0; padding-left: 0;
 }
-#mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: url(bg.png) -100px 0;
-  width: 240px;
-  height: 85px;
-}
+
 #dot {
   position: absolute;
   left: 198px;
@@ -136,40 +119,41 @@ h3 {
   width: 46px;
   height: 46px;
 }
-#ribbon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 149px;
-  height: 149px;
-  background:url(ribbon.png);
-  _background: none;
-  _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=ribbon.png);
+
+#preview-fixed-top {
+  position: fixed;
+  z-index: 10;
 }
 
 #preview {
   background: #f9f9f9; position: relative;
   color: #fff;
-  float: left;
-  width: 380px;
-  height: 320px;
-  margin: 0 20px 20px 0;
+  width: 150px;
+  height: 170px;
+  margin: 40px auto auto auto;
+
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
   clear: both;
 }
 #canvas-preview{
-  width: 380px; top: 100px;
+  margin:auto;
+  width: 150px; top: 60px;
   position: relative;
 }
+
+#gauge-opts{
+  position: absolute; top: 425px; left: 0; right: 0;
+}
+
 #preview-textfield{
-  position: absolute; top: 65px; left: 0; right: 0;
+  position: absolute; top: 25px; left: 0; right: 0;
   text-align: center; font-size: 2em; font-weight: bold;
-  color: black; font-family: 'Amaranth', sans-serif;
+  color: rgb(127, 127, 127); font-family: 'Amaranth', sans-serif;
 }
 .reset {
-  top: 65px !important; 
+  top: 25px !important; 
   font-size: 2em;
 }
 .donut #preview-textfield{
@@ -221,7 +205,7 @@ a.button:hover {
   margin: 0; padding: 0;
 }
 #type-select li{
-  list-style: none; float: left; display: block;
+  list-style: none; display: inline-block;
   bottom: -20px; position: relative; padding-bottom: 20px; border-radius: 5px;
   /*background-image: linear-gradient(bottom, #FFFFFF 10px, #EEEEEE 82%);*/
   background-image: -webkit-linear-gradient(top, #EEEEEE, #FFFFFF);
@@ -254,25 +238,7 @@ input.color{
 .fd-slider-disabled{
   opacity: 0.5;
 }
-#strike-it{
-  position: absolute; left: 500px;
-  -moz-user-select: -moz-none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-  background: url(strike.png);
-  width: 347px; height: 248px;
-}
-#its-coffee{
-  font-family: 'Just Another Hand', cursive; color: red;
-  font-size: 220px; position: absolute; left: 600px; top: 220px;
-  -webkit-transform: rotate(-20deg);
-  -moz-transform: rotate(-20deg);
-  -ms-transform: rotate(-20deg);
-  -o-transform: rotate(-20deg);
-  text-shadow: rgba(0, 0, 0, 0.2) 1px 1px 0;
-}
+
 input[disabled] {
   opacity: 0.5;
 }

@@ -1,9 +1,11 @@
-<link href="resources/node-red-contrib-inline-gauge/bootstrap.min.css" type="text/css"
+<link href="resources/node-red-contrib-inline-gauge/bootstrap.min.css"
+  type="text/css"
   rel="stylesheet">
-<link href="resources/node-red-contrib-inline-gauge/main.css?v=5" type="text/css"
+<link href="resources/node-red-contrib-inline-gauge/main.css"
+  type="text/css"
   rel="stylesheet">
 <link rel="stylesheet" type="text/css"
-  href="resources/node-red-contrib-inline-gauge/fd-slider.css">
+  href="resources/node-red-contrib-inline-gauge/fd-slider.css?v=2">
 <link rel="stylesheet" type="text/css"
   href="resources/node-red-contrib-inline-gauge/fd-slider-tooltip.css">
 <script type="text/javascript"
@@ -25,9 +27,28 @@
           validate: RED.validators.typedInput("dataType")
         },
         dataType: { value: "msg" },
-        thumbnail: { value: false },
+        currval: { value: "0"},
+        animationSpeed: { value: 0},
+        angle: { value: "0"},
+        lineWidth: { value: "0"},
+        radiusScale: { value: "0"},
+        ptrLen: { value: "0"},
+        ptrColor: { value: "0"},
+        ptrStroke: { value: "0"},
+        fontSize: { value: "0"},
+        colorStart: { value: "0"},
+        colorStop: { value: "0"},
+        strokeColor: { value: "0"},
+        divisionsCbx: { value: true},
+        divisions: { value: "0"},
+        divLength: { value: "0"},
+        divColor: { value: "0"},
+        divWidth: { value: "0"},
+        subDivisions: { value: "0"},
+        subLength: { value: "0"},
+        subColor: { value: "0"},
+        subWidth: { value: "0"},
         active: { value: true },
-        pass: { value: true },
         outputs: { value: 1 }
       },
       inputs: 1,
@@ -42,17 +63,26 @@
         return this.name? "node_label_italic":"";
       },
       inputLabels: function () {
-        return `${this.dataType}.${this.data}`;
+        return `${this.dataType}.${this.data}.${this.currval}`;
       },
       oneditprepare: function () {
         fdSlider.init();
         jscolor.init();
 
-        $('#divisionsCbx').click(function () {
+        $('#node-input-divisionsCbx').click(function () {
           $('.subDivisions').toggle();
           $('#subDivisions').toggle();
           fdSlider.redrawAll();
         })
+
+        if(this.divisionsCbx) {
+          //console.log($('#node-input-divisionsCbx'));
+          console.log("checking the damn box");
+          //$('.subDivisions').toggle();
+          //$('#subDivisions').toggle();
+          document.getElementById('node-input-divisionsCbx').checked = true;
+          //fdSlider.redrawAll();
+        }        
 
         function update () {
           var opts={};
@@ -129,7 +159,7 @@
             } else {
               opts[this.name]=val;
             }
-            if (this.name=="currval") {
+            if (this.name=="node-input-currval") {
               // update current demo gauge
               demoGauge.set(parseInt(this.value));
               AnimationUpdater.run();
@@ -255,8 +285,8 @@
             this.onchange=update;
           });
 
-          $('.gauge-opts input[name=currval]').mouseup(function () {
-            console.log("currval update");
+          $('.gauge-opts input[name=node-input-currval]').mouseup(function () {
+            console.log("node-input-currval update");
             AnimationUpdater.run();
           });
 
@@ -283,9 +313,9 @@
               $("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
               $("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
 
-              fdSlider.disable('input-ptr-len');
-              fdSlider.disable('input-ptr-stroke');
-              $("#input-ptr-color").prop('disabled', true);
+              fdSlider.disable('node-input-ptrLen');
+              fdSlider.disable('node-input-ptrStroke');
+              $("#node-input-ptrColor").prop('disabled', true);
 
               selectGaguge1.set(1);
               selectGaguge2.set(3000);
@@ -294,15 +324,15 @@
 
             } else if (type=="zones") {
               initZones();
-              fdSlider.disable('input-ptr-len');
-              fdSlider.disable('input-ptr-stroke');
+              fdSlider.disable('node-input-ptrLen');
+              fdSlider.disable('node-input-ptrStroke');
               $("#preview-textfield").removeClass("reset").addClass("reset");
               $("input[name=angle]").val(-20);
               $("input[name=lineWidth]").val(20);
 
-              fdSlider.enable('input-ptr-len');
-              fdSlider.enable('input-ptr-stroke');
-              $("#input-ptr-color").prop('disabled', false);
+              fdSlider.enable('node-input-ptrLen');
+              fdSlider.enable('node-input-ptrStroke');
+              $("#node-input-ptrColor").prop('disabled', false);
 
               $("input[name=colorStart]").prop('disabled', true);
               $("input[name=colorStop]").prop('disabled', true);
@@ -337,17 +367,17 @@
               $("input[name=colorStop]").val("8FC0DA")[0].color.importColor();
               $("input[name=strokeColor]").val("E0E0E0")[0].color.importColor();
 
-              fdSlider.enable('input-ptr-len');
-              fdSlider.enable('input-ptr-stroke');
-              $("#input-ptr-color").prop('disabled', false);
+              fdSlider.enable('node-input-ptrLen');
+              fdSlider.enable('node-input-ptrStroke');
+              $("#node-input-ptrColor").prop('disabled', false);
               selectGaguge1.set(3000);
               selectGaguge2.set(1);
               selectGauge3.set(1);
               selectGauge4.set(1);
             }
-            //fdSlider.updateSlider('input-line-width');
-            fdSlider.updateSlider('input-font-size');
-            fdSlider.updateSlider('input-angle');
+            //fdSlider.updateSlider('node-input-lineWidth');
+            fdSlider.updateSlider('node-input-fontSize');
+            fdSlider.updateSlider('node-input-angle');
             $("#example").removeClass("donut, gauge").addClass(type);
             update();
           });
@@ -411,11 +441,13 @@
           selectGauge3.setOptions(opts);
           selectGauge3.set(1607);
 
+
+
           initGauge();
           update();
 
-        });
 
+        });
 
       }
 
@@ -530,12 +562,19 @@
 </script>
 
 <script type="text/html" data-template-name="gauge">
+
+  <div id="preview-fixed-top" class="red-ui-editor">
+    <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
     <div class="form-row">
         <label style="padding-top: 8px" for="node-input-data"><i class="fa fa-ellipsis-h"></i> Property</label>
         <input type="text" id="node-input-data" style="width:70%">
         <input type="hidden" id="node-input-dataType">
     </div>
 
+    <div class="form-row">
     <ul class="horiz-list" id="type-select">
       <li class="active" type="gauge"><canvas width=80 height=50 id="select-1"></canvas></li>
       <li type="donut"><canvas width=80 height=40 id="select-2"></canvas></li>
@@ -543,48 +582,43 @@
       <li type="new"><canvas width=80 height=50 id="select-4"></canvas></li>
     </ul>    
 
-
-    <div id="preview">
+    <div id="preview" class="red-ui-editor">
         <canvas width=150 height=100 id="canvas-preview"></canvas>
-        <div id="preview-textfield"></div>
+        <div id="preview-textfield">0</div>
     </div>
-
-
+    </div>
+  </div>
 
   <div class="form-row">
     <div id="gauge-opts" class="gauge-opts">
       <h4>Options:</h4>
-      <label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
-      <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
-      <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
-      <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
-      <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
-      <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="60"><br>
-      <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
-      <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
-      <label>Font size:</label><input id="input-font-size" type="text" name="fontSize" min="0" max="100" value="41"><br>
-      <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
-      <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
-      <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
+      <label>Current Val:</label><input type="text" id="node-input-currval" name="node-input-currval" min="0" max="3000" step="25" value="1244"><br>
+      <label>Anim speed:</label><input type="text" id="node-input-animationSpeed" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
+      <label>Angle:</label><input id="node-input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
+      <label>Line width:</label><input id="node-input-lineWidth" type="text" name="lineWidth" min="0" max="70" value="44"><br>
+      <label>Radius:</label><input id="node-input-radiusScale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
+      <label>Ptr length:</label><input id="node-input-ptrLen" type="text" name="pointer.length" min="0" max="100" value="60"><br>
+      <label>Ptr color:</label><input id="node-input-ptrColor" type="text" class="color" name="pointer.color" value="000000"><br>
+      <label>Ptr stroke:</label><input id="node-input-ptrStroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
+      <label>Font size:</label><input id="node-input-fontSize" type="text" name="fontSize" min="0" max="100" value="41"><br>
+      <label>Color start:</label><input id="node-input-colorStart" type="text" name="colorStart" class="color" value="6FADCF"><br>
+      <label>Color stop:</label><input id="node-input-colorStop" type="text" name="colorStop" class="color" value="8FC0DA"><br>
+      <label>Background:</label><input id="node-input-strokeColor" type="text" name="strokeColor" class="color" value="E0E0E0"><br>
   
-      <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
+      <label>Ticks:</label><input type="checkbox" id="node-input-divisionsCbx" class="renderTicks"><br>
   
       <div class="subDivisions" style="display: none;">
-      <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
-      <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
-      <label>Division Color:</label><input type="text" name="divColor" value="333333" class="color renderTicks"><br>
-      <label>Division indicator width:</label><input type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
-      <label>SubDivisions:</label><input type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
-      <label>SubDivisions Length:</label><input type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
-      <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
-      <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
+      <label>Divisions:</label><input id="node-input-divisions" type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
+      <label>Divisions Length:</label><input id="node-input-divLength" type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
+      <label>Division Color:</label><input id="node-input-divColor" type="text" name="divColor" value="333333" class="color renderTicks"><br>
+      <label>Division indicator width:</label><input id="node-input-divWidth" type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
+      <label>SubDivisions:</label><input id="node-input-subDivisions" type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
+      <label>SubDivisions Length:</label><input id="node-input-subLength" type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
+      <label>SubDivisions Color:</label><input id="node-input-subColor" type="text" name="subColor" value="666666" class="color renderTicks"><br>
+      <label>SubDivisions indicator width:</label><input id="node-input-subWidth" type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
       </div>
     </div>
 
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
 </script>
 
 <script type="text/html" data-help-name="image">

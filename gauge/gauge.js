@@ -2,6 +2,7 @@ module.exports = function(RED) {
 
     function GaugeNode(config) {
         RED.nodes.createNode(this, config);
+        this.property   = config.property || "msg.payload";
         this.data       = config.data || "";
         this.dataType   = config.dataType || "msg";
         this.currval        = config.currval || "0";
@@ -26,12 +27,12 @@ module.exports = function(RED) {
         this.subColor       = config.subColor || "0";
         this.subWidth       = config.subWidth || "0";
         this.active     = (config.active === null || typeof config.active === "undefined") || config.active;
-        this.pass       = config.pass;
 
         var node = this;
 
-        function sendDataToClient(msg) {
+        function sendDataToClient(msg,node) {
             var d = { id:node.id }
+            console.log(node);
             d.data = msg.payload;
             
             try {
@@ -52,7 +53,7 @@ module.exports = function(RED) {
             if (this.active !== true) { return; }
 
             node.send(msg);
-            sendDataToClient(msg)
+            sendDataToClient(msg,node);
 
         });
 

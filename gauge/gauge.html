@@ -26,7 +26,10 @@
           required: true,
           validate: RED.validators.typedInput("dataType")
         },
+        complete: {value:"false", required:true},
+        targetType: {value:undefined},
         dataType: { value: "msg" },
+        position: { value: "above"},
         currval: { value: "0"},
         animationSpeed: { value: 0},
         angle: { value: "0"},
@@ -65,9 +68,36 @@
       inputLabels: function () {
         return `${this.dataType}.${this.data}.${this.currval}`;
       },
+      oneditsave: function() {
+          $("#node-input-complete").val($("#node-input-typed-complete").typedInput('value'));
+      },      
       oneditprepare: function () {
+
         fdSlider.init();
         jscolor.init();
+                
+        $("#node-input-typed-complete").typedInput({
+                default: "msg",
+                types:['msg', "jsonata"],
+                typeField: $("#node-input-targetType")
+            });
+            if (this.targetType === "jsonata") {
+                var property = this.complete || "";
+                $("#node-input-typed-complete").typedInput('type','jsonata');
+                $("#node-input-typed-complete").typedInput('value',property);
+            } else {
+                var property = (!this.complete||(this.complete === "false")) ? "payload" : this.complete+"";
+                $("#node-input-typed-complete").typedInput('type','msg');
+                $("#node-input-typed-complete").typedInput('value',property);
+            }
+            $("#node-input-typed-complete").on('change',function() {
+                if ($("#node-input-typed-complete").typedInput('type') === 'msg' &&
+                    $("#node-input-typed-complete").typedInput('value') === ''
+                ) {
+                    $("#node-input-typed-complete").typedInput('value','payload');
+                }
+            });
+
 
         $('#node-input-divisionsCbx').click(function () {
           $('.subDivisions').toggle();
@@ -80,7 +110,10 @@
           console.log("checking the damn box");
           //$('.subDivisions').toggle();
           //$('#subDivisions').toggle();
-          document.getElementById('node-input-divisionsCbx').checked = true;
+          setTimeout(() => {
+            document.getElementById('node-input-divisionsCbx').checked = true;
+          }, 100);
+          //document.getElementById('node-input-divisionsCbx').checked = true;
           //fdSlider.redrawAll();
         }        
 
@@ -166,7 +199,7 @@
             }
           });
           $('#gauge-opts input:checkbox').each(function () {
-            console.log("input:checkbox");
+            //console.log("input:checkbox");
             opts[this.name]=this.checked;
             $('#opt-'+this.name).text(this.checked);
           });
@@ -181,6 +214,7 @@
           }
 
         }
+
         function initGauge () {
           console.log("initGauge");
           demoGauge=new Gauge(document.getElementById("canvas-preview"));
@@ -458,9 +492,11 @@
       const id=node.id;
       const $foreignObject=document.getElementById('gauge-foreignObject-'+id)
       const $background=document.getElementById('gauge-background-'+id);
+      const $text=document.getElementById('gauge-text-'+id);
 
       $foreignObject&&$foreignObject.remove()
       $background&&$background.remove()
+      $text&&$text.remove()
       delete node.gauge;
     }
 
@@ -470,10 +506,25 @@
 
       const $foreignObject=document.getElementById('gauge-foreignObject-'+id)
       const $background=document.getElementById('gauge-background-'+id);
+      const $text=document.getElementById('gauge-text-'+id);
 
       $foreignObject&&$foreignObject.remove()
       $background&&$background.remove()
+      $text&&$text.remove()
     }
+
+    function revLimit (gauge) {
+      //console.log("gauge.value:",gauge.value);
+      if(gauge.value >= gauge.maxValue) {
+        let range = gauge.maxValue-gauge.minValue;
+        let range5pct = range*0.05;
+        let val = gauge.maxValue-(Math.random()*range5pct);
+        gauge.set(val);
+      }
+      else {
+        gauge.set(gauge.maxValue);
+      }
+    }    
 
     var render=function (id, data, node) {
       console.log("render()");
@@ -491,11 +542,12 @@
           pointer: {
             length: parseFloat(node.ptrLen)/100,
             strokeWidth: parseFloat(node.ptrStroke)/1000,
-            color: node.ptrColor
+            color: "#"+node.ptrColor
           },
-          limitMax: 'false',
+          limitMax: true,
           percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]], // !!!!
           strokeColor: node.strokeColor,
+          highDpiSupport: true,
           staticZones: [
             { strokeStyle: "#30B32D", min: 0, max: 1000 },    // Green to Yellowish Green
             { strokeStyle: "#ADFF2F", min: 1000, max: 2000 }, // Yellowish Green to Yellow
@@ -505,10 +557,23 @@
           ],
         };
         //console.log($container)
+        let backgroundOffset = 32;
+        let foreignObjectOffset = 45;
+        let textOffset = 120;
+
+        if(node.position === "above") {
+          backgroundOffset = -102;
+          foreignObjectOffset = -89;
+          textOffset = -14;
+        } else if (node.position === "middle") {
+          backgroundOffset = -35;
+          foreignObjectOffset = -22; 
+          textOffset = 53;         
+        }
 
         var canvas=document.createElement('canvas');
         canvas.setAttribute('width', '100');
-        canvas.setAttribute('height', '50');
+        canvas.setAttribute('height', '60');
         canvas.setAttribute('id', 'gauge-canvas-'+id);
 
         var backgroundRect=document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -519,31 +584,58 @@
         backgroundRect.setAttribute('fill', 'black');
         backgroundRect.setAttribute('stroke', 'grey');
         backgroundRect.setAttribute('stroke-width', '2');
-        backgroundRect.setAttribute('transform', 'translate(0,32)');
+        backgroundRect.setAttribute('transform', 'translate(0,'+backgroundOffset+')');
         backgroundRect.setAttribute('id', 'gauge-background-'+id);
 
         $container.appendChild(backgroundRect);
 
         var foreignObject=document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-        foreignObject.setAttribute('width', '100');
-        foreignObject.setAttribute('height', '100');
-        foreignObject.setAttribute('transform', 'translate(0,50)');
+        foreignObject.setAttribute('width', '300');
+        foreignObject.setAttribute('height', '300');
+        foreignObject.setAttribute('transform', 'translate(0,'+foreignObjectOffset+')');
         foreignObject.setAttribute('id', 'gauge-foreignObject-'+id);
         foreignObject.appendChild(canvas);
         $container.appendChild(foreignObject);
 
         node.gauge=new Gauge(canvas).setOptions(opts);
         node.gauge.maxValue=5000;
-        node.gauge.paddingBottom=0.5;
+        //node.gauge.paddingBottom=0.5;
         node.gauge.animationSpeed=node.animationSpeed;
 
         node.gauge.set(0);
+
+        node.output_number = document.createElementNS("http://www.w3.org/2000/svg","text");
+                    node.output_number.setAttribute("class","red-ui-flow-node-label-text");
+                    node.output_number.setAttribute("x",0);
+                    node.output_number.setAttribute("y",0);
+                    node.output_number.setAttribute("transform",'translate(33,'+textOffset+')');
+                    node.output_number.setAttribute('id', 'gauge-text-'+id);
+                    node.output_number.textContent = "0";
+                    $container.appendChild(node.output_number);
+
+                    console.log("width",node.output_number.getAttribute("width"));
+
       }
 
       if (node.gauge) {
         //const $needle = document.getElementById("gauge-needle-" + id)
         //$needle.setAttribute('transform', 'translate(50,15) rotate('+data+',0,0)');
-        node.gauge.set(data);
+        let val = parseFloat(data);
+        if(val >= node.gauge.maxValue) {
+          node.gauge.animationSpeed = 33;
+          node.output_number.textContent = data;
+            node.gauge.interval = setInterval(() => {
+              revLimit(node.gauge);
+            }, 100);
+        } else {
+          console.log("clear interval");
+          clearInterval(node.gauge.interval);
+          node.gauge.animationSpeed=node.animationSpeed;
+          node.gauge.set(data);
+          node.output_number.textContent = data;
+        }
+
+
       }
     }
 
@@ -569,9 +661,10 @@
       <input type="text" id="node-input-name" placeholder="Name">
   </div>
     <div class="form-row">
-        <label style="padding-top: 8px" for="node-input-data"><i class="fa fa-ellipsis-h"></i> Property</label>
-        <input type="text" id="node-input-data" style="width:70%">
-        <input type="hidden" id="node-input-dataType">
+        <label style="padding-top: 8px" for="node-input-data"><i class="fa fa-ellipsis-h"></i> Gauge Value</label>
+        <input id="node-input-typed-complete" type="text" style="width: 70%">
+        <input id="node-input-complete" type="hidden">
+        <input id="node-input-targetType" type="hidden">
     </div>
 
     <div class="form-row">
@@ -592,6 +685,14 @@
   <div class="form-row">
     <div id="gauge-opts" class="gauge-opts">
       <h4>Options:</h4>
+
+      <label for="position">Gauge Position:</label>
+      <select name="position" id="node-input-position">
+        <option value="above">Above</option>
+        <option value="below">Below</option>
+        <option value="middle">Middle</option>
+      </select>
+      <br>
       <label>Current Val:</label><input type="text" id="node-input-currval" name="node-input-currval" min="0" max="3000" step="25" value="1244"><br>
       <label>Anim speed:</label><input type="text" id="node-input-animationSpeed" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
       <label>Angle:</label><input id="node-input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>

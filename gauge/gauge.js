@@ -1,10 +1,16 @@
 module.exports = function(RED) {
 
     function GaugeNode(config) {
+        //console.log(config);
+        var hasEditExpression = (config.targetType === "jsonata");
+        var editExpression = hasEditExpression ? config.complete : null;
         RED.nodes.createNode(this, config);
+        this.complete = hasEditExpression ? null : (config.complete||"payload").toString();
+        if (this.complete === "false") { this.complete = "payload"; }
         this.property   = config.property || "msg.payload";
         this.data       = config.data || "";
         this.dataType   = config.dataType || "msg";
+        this.position        = config.position || "above";
         this.currval        = config.currval || "0";
         this.animationSpeed = config.animationSpeed || 0;
         this.angle          = config.angle || "0";
@@ -28,20 +34,18 @@ module.exports = function(RED) {
         this.subWidth       = config.subWidth || "0";
         this.active     = (config.active === null || typeof config.active === "undefined") || config.active;
 
-        var node = this;
-
-        function sendDataToClient(msg,node) {
-            var d = { id:node.id }
-            console.log(node);
-            d.data = msg.payload;
-            
+        var preparedEditExpression = null;
+        if (editExpression) {
             try {
-                RED.comms.publish("gauge", d);
+                preparedEditExpression = RED.util.prepareJSONataExpression(editExpression, this);
             }
-            catch(e) {
-                node.error("Invalid msg", msg);
+            catch (e) {
+                node.error(RED._("debug.invalid-exp", {error: editExpression}));
+                return;
             }
         }
+
+        var node = this;
 
         function handleError(err, msg, statusText) {
             node.status({ fill:"red", shape:"dot", text:statusText });
@@ -53,9 +57,40 @@ module.exports = function(RED) {
             if (this.active !== true) { return; }
 
             node.send(msg);
-            sendDataToClient(msg,node);
+
+            var d = { id:node.id }
+            console.log(node);
+
+            if (preparedEditExpression) {
+                RED.util.evaluateJSONataExpression(preparedEditExpression, msg, (err, value) => {
+                    if (err) { done(RED._("debug.invalid-exp", {error: editExpression})); }
+                    else { d.data = value; }
+                });
+            } else {
+                // Extract the required message property
+                console.log("node.complete =",node.complete);
+                console.log("node.dataType = ",node.dataType);
+                var property = "payload";
+                var output = msg[property];
+                if (node.complete !== "false" && typeof node.complete !== "undefined") {
+                    property = node.complete;
+                    try { d.data = RED.util.getMessageProperty(msg,node.complete); }
+                    catch(err) { d.data = undefined; }
+                }
+                //done(null,{id:node.id, z:node.z, _alias: node._alias,  path:node._flow.path, name:node.name, topic:msg.topic, property:property, msg:output});
+            }
+        
+            try {
+                console.log("sending d's:",d);
+                RED.comms.publish("gauge", d);
+            }
+            catch(e) {
+                node.error("Invalid msg", msg);
+            }
 
         });
+
+
 
         node.on("close", function() {
             RED.comms.publish("gauge", { id:this.id });

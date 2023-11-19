@@ -701,6 +701,7 @@
       var displayedAngle, fillStyle, gauge, h, j, l, len, len1, max, min, radius, ref, ref1, scaleMutate, tmpRadius, w, zone;
       w = this.canvas.width / 2;
       h = (this.canvas.height * this.paddingTop + this.availableHeight) - ((this.radius + this.lineWidth / 2) * this.extraPadding);
+      //console.log("w:",w," h:",h);
       displayedAngle = this.getAngle(this.displayedValue);
       if (this.textField) {
         this.textField.render(this);

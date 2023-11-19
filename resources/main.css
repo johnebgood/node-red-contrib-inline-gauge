@@ -126,22 +126,33 @@ h3 {
 }
 
 #preview {
-  background: #f9f9f9; position: relative;
+  background: transparent; 
+  position: relative;
   color: #fff;
-  width: 150px;
-  height: 170px;
+  width: 100px;
+  height: 100px;
   margin: 40px auto auto auto;
-
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
   clear: both;
 }
 #canvas-preview{
   margin:auto;
-  width: 150px; top: 60px;
+  width: 100px; top: 0px;
   position: relative;
 }
+
+  .container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+
+  .container canvas, .container svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 
 #gauge-opts{
   position: absolute; top: 425px; left: 0; right: 0;

@@ -209,10 +209,6 @@
           demoGauge.setOptions(opts);
           demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
           demoGauge.render();
-          if ($('#share').is(':checked')) {
-            window.location.replace('#?'+$('form').serialize());
-          }
-
         }
 
         function initGauge () {
@@ -532,7 +528,9 @@
 
       //let $img = document.getElementById("gauge-img-" + id)
       const $container=document.getElementById(id)
+
       if (!$container) { return }
+      console.log($container);
 
       if (!node.gauge) {
         var opts={
@@ -558,25 +556,25 @@
         };
         //console.log($container)
         let backgroundOffset = 32;
-        let foreignObjectOffset = 45;
+        let foreignObjectOffset = 33;
         let textOffset = 120;
 
         if(node.position === "above") {
           backgroundOffset = -102;
-          foreignObjectOffset = -89;
+          foreignObjectOffset = -101;
           textOffset = -14;
         } else if (node.position === "middle") {
           backgroundOffset = -35;
-          foreignObjectOffset = -22; 
+          foreignObjectOffset = -35; 
           textOffset = 53;         
         }
 
         var canvas=document.createElement('canvas');
         canvas.setAttribute('width', '100');
-        canvas.setAttribute('height', '60');
+        canvas.setAttribute('height', '100');
         canvas.setAttribute('id', 'gauge-canvas-'+id);
 
-        var backgroundRect=document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        /*var backgroundRect=document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         backgroundRect.setAttribute("rx", 5);
         backgroundRect.setAttribute("ry", 5);
         backgroundRect.setAttribute('width', '100');
@@ -587,11 +585,23 @@
         backgroundRect.setAttribute('transform', 'translate(0,'+backgroundOffset+')');
         backgroundRect.setAttribute('id', 'gauge-background-'+id);
 
-        $container.appendChild(backgroundRect);
+        $container.appendChild(backgroundRect);*/
+
+        var backgroundCircle=document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        backgroundCircle.setAttribute("cx",50);
+        backgroundCircle.setAttribute("cy",50);
+        backgroundCircle.setAttribute("r",50);
+        backgroundCircle.setAttribute('fill', 'black');
+        backgroundCircle.setAttribute('stroke', 'grey');
+        backgroundCircle.setAttribute('stroke-width', '2');
+        backgroundCircle.setAttribute('transform', 'translate(0,'+backgroundOffset+')');
+        backgroundCircle.setAttribute('id', 'gauge-background-'+id);
+
+        $container.appendChild(backgroundCircle);
 
         var foreignObject=document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-        foreignObject.setAttribute('width', '300');
-        foreignObject.setAttribute('height', '300');
+        foreignObject.setAttribute('width', '100');
+        foreignObject.setAttribute('height', '100');
         foreignObject.setAttribute('transform', 'translate(0,'+foreignObjectOffset+')');
         foreignObject.setAttribute('id', 'gauge-foreignObject-'+id);
         foreignObject.appendChild(canvas);
@@ -599,21 +609,21 @@
 
         node.gauge=new Gauge(canvas).setOptions(opts);
         node.gauge.maxValue=5000;
-        //node.gauge.paddingBottom=0.5;
+        node.gauge.paddingTop=0.1;
         node.gauge.animationSpeed=node.animationSpeed;
 
         node.gauge.set(0);
 
         node.output_number = document.createElementNS("http://www.w3.org/2000/svg","text");
-                    node.output_number.setAttribute("class","red-ui-flow-node-label-text");
-                    node.output_number.setAttribute("x",0);
-                    node.output_number.setAttribute("y",0);
-                    node.output_number.setAttribute("transform",'translate(33,'+textOffset+')');
-                    node.output_number.setAttribute('id', 'gauge-text-'+id);
-                    node.output_number.textContent = "0";
-                    $container.appendChild(node.output_number);
+        node.output_number.setAttribute("class","red-ui-flow-node-label-text");
+        node.output_number.setAttribute("x",0);
+        node.output_number.setAttribute("y",0);
+        node.output_number.setAttribute("transform",'translate(33,'+textOffset+')');
+        node.output_number.setAttribute('id', 'gauge-text-'+id);
+        node.output_number.textContent = "0";
+        $container.appendChild(node.output_number);
 
-                    console.log("width",node.output_number.getAttribute("width"));
+        console.log("width",node.output_number.getAttribute("width"));
 
       }
 
@@ -676,8 +686,13 @@
     </ul>    
 
     <div id="preview" class="red-ui-editor">
+      <div  class="container">
+      <svg width="100" height="100">
+        <circle cx="50" cy="50" r="50" fill="black" stroke="grey" stroke-width="2"/>
+      </svg>      
         <canvas id="canvas-preview"></canvas>
         <div id="preview-textfield">0</div>
+      </div>
     </div>
     </div>
   </div>

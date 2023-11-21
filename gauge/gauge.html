@@ -1,18 +1,10 @@
-<link href="resources/node-red-contrib-inline-gauge/bootstrap.min.css"
-  type="text/css"
-  rel="stylesheet">
-<link href="resources/node-red-contrib-inline-gauge/main.css"
-  type="text/css"
-  rel="stylesheet">
-<link rel="stylesheet" type="text/css"
-  href="resources/node-red-contrib-inline-gauge/fd-slider.css?v=2">
-<link rel="stylesheet" type="text/css"
-  href="resources/node-red-contrib-inline-gauge/fd-slider-tooltip.css">
-<script type="text/javascript"
-  src="resources/node-red-contrib-inline-gauge/jscolor.js"></script>
+<link href="resources/node-red-contrib-inline-gauge/bootstrap.min.css" type="text/css" rel="stylesheet">
+<link href="resources/node-red-contrib-inline-gauge/main.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="resources/node-red-contrib-inline-gauge/fd-slider.css?v=2">
+<link rel="stylesheet" type="text/css" href="resources/node-red-contrib-inline-gauge/fd-slider-tooltip.css">
+<script type="text/javascript" src="resources/node-red-contrib-inline-gauge/jscolor.js"></script>
 <script src="resources/node-red-contrib-inline-gauge/gauge.js"></script>
-<script type="text/javascript"
-  src="resources/node-red-contrib-inline-gauge/fd-slider.js"></script>
+<script type="text/javascript" src="resources/node-red-contrib-inline-gauge/fd-slider.js"></script>
 
 <script type="text/javascript">
   (function () {
@@ -26,31 +18,31 @@
           required: true,
           validate: RED.validators.typedInput("dataType")
         },
-        complete: {value:"false", required:true},
-        targetType: {value:undefined},
+        complete: { value: "false", required: true },
+        targetType: { value: undefined },
         dataType: { value: "msg" },
-        position: { value: "above"},
-        currval: { value: "0"},
-        animationSpeed: { value: 0},
-        angle: { value: "0"},
-        lineWidth: { value: "0"},
-        radiusScale: { value: "0"},
-        ptrLen: { value: "0"},
-        ptrColor: { value: "0"},
-        ptrStroke: { value: "0"},
-        fontSize: { value: "0"},
-        colorStart: { value: "0"},
-        colorStop: { value: "0"},
-        strokeColor: { value: "0"},
-        divisionsCbx: { value: true},
-        divisions: { value: "0"},
-        divLength: { value: "0"},
-        divColor: { value: "0"},
-        divWidth: { value: "0"},
-        subDivisions: { value: "0"},
-        subLength: { value: "0"},
-        subColor: { value: "0"},
-        subWidth: { value: "0"},
+        position: { value: "above" },
+        currval: { value: "0" },
+        animationSpeed: { value: 0 },
+        angle: { value: "0" },
+        lineWidth: { value: "0" },
+        radiusScale: { value: "0" },
+        ptrLen: { value: "0" },
+        ptrColor: { value: "0" },
+        ptrStroke: { value: "0" },
+        fontSize: { value: "0" },
+        colorStart: { value: "0" },
+        colorStop: { value: "0" },
+        strokeColor: { value: "0" },
+        divisionsCbx: { value: true },
+        divisions: { value: "0" },
+        divLength: { value: "0" },
+        divColor: { value: "0" },
+        divWidth: { value: "0" },
+        subDivisions: { value: "0" },
+        subLength: { value: "0" },
+        subColor: { value: "0" },
+        subWidth: { value: "0" },
         active: { value: true },
         outputs: { value: 1 }
       },
@@ -68,35 +60,35 @@
       inputLabels: function () {
         return `${this.dataType}.${this.data}.${this.currval}`;
       },
-      oneditsave: function() {
-          $("#node-input-complete").val($("#node-input-typed-complete").typedInput('value'));
-      },      
+      oneditsave: function () {
+        $("#node-input-complete").val($("#node-input-typed-complete").typedInput('value'));
+      },
       oneditprepare: function () {
 
         fdSlider.init();
         jscolor.init();
-                
+
         $("#node-input-typed-complete").typedInput({
-                default: "msg",
-                types:['msg', "jsonata"],
-                typeField: $("#node-input-targetType")
-            });
-            if (this.targetType === "jsonata") {
-                var property = this.complete || "";
-                $("#node-input-typed-complete").typedInput('type','jsonata');
-                $("#node-input-typed-complete").typedInput('value',property);
-            } else {
-                var property = (!this.complete||(this.complete === "false")) ? "payload" : this.complete+"";
-                $("#node-input-typed-complete").typedInput('type','msg');
-                $("#node-input-typed-complete").typedInput('value',property);
-            }
-            $("#node-input-typed-complete").on('change',function() {
-                if ($("#node-input-typed-complete").typedInput('type') === 'msg' &&
-                    $("#node-input-typed-complete").typedInput('value') === ''
-                ) {
-                    $("#node-input-typed-complete").typedInput('value','payload');
-                }
-            });
+          default: "msg",
+          types: ['msg', "jsonata"],
+          typeField: $("#node-input-targetType")
+        });
+        if (this.targetType==="jsonata") {
+          var property=this.complete||"";
+          $("#node-input-typed-complete").typedInput('type', 'jsonata');
+          $("#node-input-typed-complete").typedInput('value', property);
+        } else {
+          var property=(!this.complete||(this.complete==="false"))? "payload":this.complete+"";
+          $("#node-input-typed-complete").typedInput('type', 'msg');
+          $("#node-input-typed-complete").typedInput('value', property);
+        }
+        $("#node-input-typed-complete").on('change', function () {
+          if ($("#node-input-typed-complete").typedInput('type')==='msg'&&
+            $("#node-input-typed-complete").typedInput('value')===''
+          ) {
+            $("#node-input-typed-complete").typedInput('value', 'payload');
+          }
+        });
 
 
         $('#node-input-divisionsCbx').click(function () {
@@ -105,17 +97,17 @@
           fdSlider.redrawAll();
         })
 
-        if(this.divisionsCbx) {
+        if (this.divisionsCbx) {
           //console.log($('#node-input-divisionsCbx'));
           console.log("checking the damn box");
           //$('.subDivisions').toggle();
           //$('#subDivisions').toggle();
           setTimeout(() => {
-            document.getElementById('node-input-divisionsCbx').checked = true;
+            document.getElementById('node-input-divisionsCbx').checked=true;
           }, 100);
           //document.getElementById('node-input-divisionsCbx').checked = true;
           //fdSlider.redrawAll();
-        }        
+        }
 
         function update () {
           var opts={};
@@ -497,7 +489,7 @@
     }
 
     var redraw=function (node) {
-      console.log("redraw()");
+      console.log("redraw()", node);
       const id=node.id
 
       const $foreignObject=document.getElementById('gauge-foreignObject-'+id)
@@ -507,20 +499,34 @@
       $foreignObject&&$foreignObject.remove()
       $background&&$background.remove()
       $text&&$text.remove()
+
+      
+    }
+
+    var addNode=function(node) {
+      render(node.id, node.data, node);
     }
 
     function revLimit (gauge) {
       //console.log("gauge.value:",gauge.value);
-      if(gauge.value >= gauge.maxValue) {
-        let range = gauge.maxValue-gauge.minValue;
-        let range5pct = range*0.05;
-        let val = gauge.maxValue-(Math.random()*range5pct);
+      if (gauge&&gauge.hasOwnProperty('value')&&gauge.value>=gauge.maxValue) {
+        let range=gauge.maxValue-gauge.minValue;
+        let range5pct=range*0.05;
+        let val=gauge.maxValue-(Math.random()*range5pct);
         gauge.set(val);
       }
-      else {
+      else if (gauge) {
         gauge.set(gauge.maxValue);
       }
-    }    
+    }
+
+
+    function triggerMouseEvent (node, event) {
+      //console.log(node);
+      event.target=node;
+      var clickEvent=new MouseEvent(event.type, event);
+      node.dispatchEvent(clickEvent);
+    }
 
     var render=function (id, data, node) {
       console.log("render()");
@@ -528,6 +534,9 @@
 
       //let $img = document.getElementById("gauge-img-" + id)
       const $container=document.getElementById(id)
+
+      $container.setAttribute('height', '300');
+
 
       if (!$container) { return }
       console.log($container);
@@ -542,7 +551,7 @@
             strokeWidth: parseFloat(node.ptrStroke)/1000,
             color: "#"+node.ptrColor
           },
-          limitMax: true,
+          limitMax: false,
           percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]], // !!!!
           strokeColor: node.strokeColor,
           highDpiSupport: true,
@@ -555,18 +564,18 @@
           ],
         };
         //console.log($container)
-        let backgroundOffset = 32;
-        let foreignObjectOffset = 33;
-        let textOffset = 120;
+        let backgroundOffset=32;
+        let foreignObjectOffset=33;
+        let textOffset=120;
 
-        if(node.position === "above") {
-          backgroundOffset = -102;
-          foreignObjectOffset = -101;
-          textOffset = -14;
-        } else if (node.position === "middle") {
-          backgroundOffset = -35;
-          foreignObjectOffset = -35; 
-          textOffset = 53;         
+        if (node.position==="above") {
+          backgroundOffset=-102;
+          foreignObjectOffset=-101;
+          textOffset=-14;
+        } else if (node.position==="middle") {
+          backgroundOffset=-35;
+          foreignObjectOffset=-35;
+          textOffset=53;
         }
 
         var canvas=document.createElement('canvas');
@@ -588,9 +597,9 @@
         $container.appendChild(backgroundRect);*/
 
         var backgroundCircle=document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        backgroundCircle.setAttribute("cx",50);
-        backgroundCircle.setAttribute("cy",50);
-        backgroundCircle.setAttribute("r",50);
+        backgroundCircle.setAttribute("cx", 50);
+        backgroundCircle.setAttribute("cy", 50);
+        backgroundCircle.setAttribute("r", 51);
         backgroundCircle.setAttribute('fill', 'black');
         backgroundCircle.setAttribute('stroke', 'grey');
         backgroundCircle.setAttribute('stroke-width', '2');
@@ -604,6 +613,7 @@
         foreignObject.setAttribute('height', '100');
         foreignObject.setAttribute('transform', 'translate(0,'+foreignObjectOffset+')');
         foreignObject.setAttribute('id', 'gauge-foreignObject-'+id);
+
         foreignObject.appendChild(canvas);
         $container.appendChild(foreignObject);
 
@@ -614,42 +624,96 @@
 
         node.gauge.set(0);
 
-        node.output_number = document.createElementNS("http://www.w3.org/2000/svg","text");
-        node.output_number.setAttribute("class","red-ui-flow-node-label-text");
-        node.output_number.setAttribute("x",0);
-        node.output_number.setAttribute("y",0);
-        node.output_number.setAttribute("transform",'translate(33,'+textOffset+')');
+        let rect=$container.querySelector('rect.red-ui-flow-node');
+        let input=$container.querySelector('g.red-ui-flow-port-input');
+        let output=$container.querySelector('g.red-ui-flow-port-output');
+
+        //console.log($container.transform);
+
+        foreignObject.addEventListener('mousedown', (event) => triggerMouseEvent(rect, event))
+        foreignObject.addEventListener('mouseup', (event) => triggerMouseEvent(rect, event))
+        foreignObject.addEventListener('mouseover', (event) => triggerMouseEvent(rect, event))
+        foreignObject.addEventListener('mouseout', (event) => triggerMouseEvent(rect, event))
+        foreignObject.addEventListener('touchstart', (event) => triggerMouseEvent(rect, event))
+        foreignObject.addEventListener('touchend', (event) => triggerMouseEvent(rect, event))
+
+        node.output_number=document.createElementNS("http://www.w3.org/2000/svg", "text");
+        node.output_number.setAttribute("class", "red-ui-flow-node-label-text");
+        node.output_number.setAttribute("x", 0);
+        node.output_number.setAttribute("y", 0);
+        node.output_number.setAttribute("stroke", "grey"); // Set the stroke color
+        node.output_number.setAttribute("stroke-width", "0.5"); // Set the stroke width to 1pt        
+        node.output_number.setAttribute("transform", 'translate(-20,'+textOffset+')');
         node.output_number.setAttribute('id', 'gauge-text-'+id);
-        node.output_number.textContent = "0";
+
+        node.output_number.textContent="0";
+
+        node.output_number.addEventListener('mousedown', (event) => triggerMouseEvent(rect, event))
+        node.output_number.addEventListener('mouseup', (event) => triggerMouseEvent(rect, event))
+        node.output_number.addEventListener('mouseover', (event) => triggerMouseEvent(rect, event))
+        node.output_number.addEventListener('mouseout', (event) => triggerMouseEvent(rect, event))
+        node.output_number.addEventListener('touchstart', (event) => triggerMouseEvent(rect, event))
+        node.output_number.addEventListener('touchend', (event) => triggerMouseEvent(rect, event))
+
         $container.appendChild(node.output_number);
 
-        console.log("width",node.output_number.getAttribute("width"));
+        var svgTextElement = document.getElementById('gauge-text-'+id);
+        if (svgTextElement) {
+            var style = window.getComputedStyle(svgTextElement);
+            var currentFontSize = style.fontSize;
+
+            // Ensure you have a valid font size before proceeding
+            if (currentFontSize) {
+                var fontSizeValue = parseFloat(currentFontSize);
+                var newFontSize = fontSizeValue + 5; // Increment by 5px
+                svgTextElement.setAttribute('font-size', newFontSize + 'px');
+                console.log("text width:",svgTextElement.getAttribute('width'));
+            } else {
+                console.error('Unable to retrieve font size');
+            }
+        } else {
+            console.error('SVG text element not found');
+        }
+
+        if ($container && svgTextElement) {
+            // Get the width of the SVG container
+            var containerWidth = $container.getBBox().width;
+
+            // Set the x attribute to half the width of the container
+            svgTextElement.setAttribute('x', containerWidth / 2);
+
+            // Set the text-anchor attribute to middle
+            svgTextElement.setAttribute('text-anchor', 'middle');
+        }        
+
+
+        $container.appendChild(input);
+        $container.appendChild(output);
 
       }
 
       if (node.gauge) {
         //const $needle = document.getElementById("gauge-needle-" + id)
         //$needle.setAttribute('transform', 'translate(50,15) rotate('+data+',0,0)');
-        let val = parseFloat(data);
-        if(val >= node.gauge.maxValue) {
-          node.gauge.animationSpeed = 33;
-          node.output_number.textContent = data;
-            node.gauge.interval = setInterval(() => {
-              revLimit(node.gauge);
-            }, 100);
+        let val=parseFloat(data);
+        if (val>=node.gauge.maxValue) {
+          node.gauge.animationSpeed=33;
+          node.output_number.textContent=data;
+          node.gauge.interval=setInterval(() => {
+            revLimit(node.gauge);
+          }, 100);
         } else {
           console.log("clear interval");
           clearInterval(node.gauge.interval);
           node.gauge.animationSpeed=node.animationSpeed;
           node.gauge.set(data);
-          node.output_number.textContent = data;
+          node.output_number.textContent=data;
         }
 
 
       }
     }
-
-
+    //RED.events.on("nodes:add", addNode)
     RED.events.on("editor:save", redraw)
 
     RED.comms.subscribe('gauge', function (event, data) {
@@ -688,7 +752,7 @@
     <div id="preview" class="red-ui-editor">
       <div  class="container">
       <svg width="100" height="100">
-        <circle cx="50" cy="50" r="50" fill="black" stroke="grey" stroke-width="2"/>
+        <circle cx="50" cy="50" r="51" fill="black" stroke="grey" stroke-width="2"/>
       </svg>      
         <canvas id="canvas-preview"></canvas>
         <div id="preview-textfield">0</div>

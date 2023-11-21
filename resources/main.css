@@ -134,10 +134,16 @@ h3 {
   margin: 40px auto auto auto;
   clear: both;
 }
+
 #canvas-preview{
   margin:auto;
   width: 100px; top: 0px;
   position: relative;
+}
+
+.red-ui-flow-node-label-text {
+  stroke: black;       /* Color of the stroke */
+  stroke-width: 1pt;   /* Width of the stroke */
 }
 
   .container {

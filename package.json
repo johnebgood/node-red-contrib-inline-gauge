@@ -1,7 +1,7 @@
 
 {
-  "name": "node-red-contrib-inline-gauge",
-  "version": "0.0.1",
+  "name": "@security_live/node-red-contrib-inline-gauge",
+  "version": "0.0.4",
   "description": "Display an inline real-time gauge in your flows that can monitor specific values.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

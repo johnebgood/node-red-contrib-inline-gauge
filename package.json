@@ -22,6 +22,12 @@
   "keywords": ["node-red", "gauge", "edit", "inspect","monitor","inline"],
   "author": "John Bauer",
   "contributors": [
+    {
+      "name": "CodexHere"
+    },
+    {
+      "name": "Security Live Chat"
+    }
   ],
   "license": "MIT"
 }

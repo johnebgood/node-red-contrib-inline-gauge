@@ -534,11 +534,9 @@
 
       //let $img = document.getElementById("gauge-img-" + id)
       const $container=document.getElementById(id)
-
-      $container.setAttribute('height', '300');
-
-
+     
       if (!$container) { return }
+
       console.log($container);
 
       if (!node.gauge) {
@@ -641,9 +639,10 @@
         node.output_number.setAttribute("class", "red-ui-flow-node-label-text");
         node.output_number.setAttribute("x", 0);
         node.output_number.setAttribute("y", 0);
-        node.output_number.setAttribute("stroke", "grey"); // Set the stroke color
-        node.output_number.setAttribute("stroke-width", "0.5"); // Set the stroke width to 1pt        
-        node.output_number.setAttribute("transform", 'translate(-20,'+textOffset+')');
+        node.output_number.setAttribute("stroke", "white"); // Set the stroke color
+        node.output_number.setAttribute("stroke-width", "0.3"); // Set the stroke width to 1pt        
+        node.output_number.setAttribute("font-weight", "bold");
+        node.output_number.setAttribute("transform", 'translate(50,'+textOffset+')');
         node.output_number.setAttribute('id', 'gauge-text-'+id);
 
         node.output_number.textContent="0";
@@ -658,6 +657,7 @@
         $container.appendChild(node.output_number);
 
         var svgTextElement = document.getElementById('gauge-text-'+id);
+        
         if (svgTextElement) {
             var style = window.getComputedStyle(svgTextElement);
             var currentFontSize = style.fontSize;
@@ -665,7 +665,7 @@
             // Ensure you have a valid font size before proceeding
             if (currentFontSize) {
                 var fontSizeValue = parseFloat(currentFontSize);
-                var newFontSize = fontSizeValue + 5; // Increment by 5px
+                var newFontSize = fontSizeValue + 3; // Increment by 5px
                 svgTextElement.setAttribute('font-size', newFontSize + 'px');
                 console.log("text width:",svgTextElement.getAttribute('width'));
             } else {
@@ -677,10 +677,11 @@
 
         if ($container && svgTextElement) {
             // Get the width of the SVG container
-            var containerWidth = $container.getBBox().width;
+            var textWidth = svgTextElement.getBBox().width;
+            console.log("text width:",textWidth);
 
             // Set the x attribute to half the width of the container
-            svgTextElement.setAttribute('x', containerWidth / 2);
+            //svgTextElement.setAttribute('x', containerWidth / 2);
 
             // Set the text-anchor attribute to middle
             svgTextElement.setAttribute('text-anchor', 'middle');

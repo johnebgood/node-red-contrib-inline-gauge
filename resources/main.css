@@ -123,6 +123,8 @@ h3 {
 #preview-fixed-top {
   position: fixed;
   z-index: 10;
+  width: 482px;
+  margin-top: -12px;
 }
 
 #preview {
@@ -167,7 +169,10 @@ h3 {
 #preview-textfield{
   position: absolute; top: 25px; left: 0; right: 0;
   text-align: center; font-size: 2em; font-weight: bold;
-  color: rgb(127, 127, 127); font-family: 'Amaranth', sans-serif;
+  color: rgb(255, 255, 255); font-family: 'Amaranth', sans-serif;
+  stroke: black;       /* Color of the stroke */
+  stroke-width: 3pt;   /* Width of the stroke */
+
 }
 .reset {
   top: 25px !important; 

@@ -125,6 +125,7 @@ h3 {
   z-index: 10;
   width: 482px;
   margin-top: -12px;
+  margin-left: -20px;
 }
 
 #preview {
@@ -143,9 +144,9 @@ h3 {
   position: relative;
 }
 
-.red-ui-flow-node-label-text {
-  stroke: black;       /* Color of the stroke */
-  stroke-width: 1pt;   /* Width of the stroke */
+.gauge-label-text {
+  color: #fff;
+  font-weight: bold;
 }
 
   .container {
@@ -163,7 +164,7 @@ h3 {
   }
 
 #gauge-opts{
-  position: absolute; top: 425px; left: 0; right: 0;
+  position: absolute; top: 325px; left: 0; right: 0;
 }
 
 #preview-textfield{

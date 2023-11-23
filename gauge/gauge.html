@@ -636,12 +636,13 @@
         foreignObject.addEventListener('touchend', (event) => triggerMouseEvent(rect, event))
 
         node.output_number=document.createElementNS("http://www.w3.org/2000/svg", "text");
-        node.output_number.setAttribute("class", "red-ui-flow-node-label-text");
+        node.output_number.setAttribute("class", "gauge-label-text");
         node.output_number.setAttribute("x", 0);
         node.output_number.setAttribute("y", 0);
-        node.output_number.setAttribute("stroke", "white"); // Set the stroke color
-        node.output_number.setAttribute("stroke-width", "0.3"); // Set the stroke width to 1pt        
-        node.output_number.setAttribute("font-weight", "bold");
+        //node.output_number.setAttribute("color", "white");
+        //node.output_number.setAttribute("stroke", "black"); // Set the stroke color
+        //node.output_number.setAttribute("stroke-width", "0.3"); // Set the stroke width to 1pt        
+        //node.output_number.setAttribute("font-weight", "bold");
         node.output_number.setAttribute("transform", 'translate(50,'+textOffset+')');
         node.output_number.setAttribute('id', 'gauge-text-'+id);
 
@@ -665,7 +666,7 @@
             // Ensure you have a valid font size before proceeding
             if (currentFontSize) {
                 var fontSizeValue = parseFloat(currentFontSize);
-                var newFontSize = fontSizeValue + 3; // Increment by 5px
+                var newFontSize = fontSizeValue + 6; // Increment by 5px
                 svgTextElement.setAttribute('font-size', newFontSize + 'px');
                 console.log("text width:",svgTextElement.getAttribute('width'));
             } else {
